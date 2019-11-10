@@ -1,5 +1,4 @@
 const express=require("express");
-const mongoose=require("mongoose");
 const router=express.Router();
 const bcrypt=require("bcrypt");
 const jwt = require('jsonwebtoken');
@@ -53,7 +52,7 @@ router.post('/login',(req,res)=>{
   User.findOne({userId:req.body.userId})
     .then(user=>{
       if(user){
-        console.log(user);
+        // console.log(user);
         bcrypt.compare(req.body.password, user.password)
           .then(match=>{
             if(match){
