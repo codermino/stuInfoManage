@@ -7,11 +7,11 @@
           <el-form-item label="用户名" prop="name">
             <el-input v-model="ruleForm.name" placeholder="请输入用户名"></el-input>
           </el-form-item>
-          <el-form-item label="学号" prop="stuId">
-            <el-input v-model="ruleForm.stuId" placeholder="请输入学号"></el-input>
+          <el-form-item label="学号" prop="userId">
+            <el-input v-model="ruleForm.userId" placeholder="请输入学号"></el-input>
           </el-form-item>
-          <el-form-item label="密码" prop="pass">
-            <el-input type="password" v-model="ruleForm.pass" placeholder="请输入密码"></el-input>
+          <el-form-item label="密码" prop="password">
+            <el-input type="password" v-model="ruleForm.password" placeholder="请输入密码"></el-input>
           </el-form-item>
           <el-form-item label="确认密码" prop="checkPass">
             <el-input type="password" v-model="ruleForm.checkPass" placeholder="请确认密码"></el-input>
@@ -67,7 +67,7 @@
       let validatePass2 = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请再次输入密码'));
-        } else if (value !== this.ruleForm.pass) {
+        } else if (value !== this.ruleForm.password) {
           callback(new Error('两次输入密码不一致!'));
         } else {
           callback();
@@ -76,8 +76,8 @@
       return {
         ruleForm: {
           name:'',
-          stuId:'',
-          pass: '',
+          userId:'',
+          password: '',
           checkPass: '',
           identity:''
         },
@@ -86,13 +86,13 @@
             { required: true, message: '请输入用户名', trigger: 'blur' },
             { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
           ],
-          stuId: [
+          userId: [
             {validator: checkNumber, trigger:"blur"}
           ],
           identity: [
             { required: true, message: '请选择身份', trigger: 'change' }
           ],
-          pass: [
+          password: [
             { validator: validatePass, trigger: 'blur' }
           ],
           checkPass: [
@@ -105,11 +105,16 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
+            this.axios.post('api/user/register',this.ruleForm)
+              .then(res=>{
+                // 注册成功
+                this.$message({
+                  message:"注册成功",
+                  type: 'success'
+                })
+              })
           }
+          this.$router.push('/login');
         });
       },
       resetForm(formName) {
