@@ -15,7 +15,7 @@ router.post('/register',(req,res)=>{
   User.findOne({userId:req.body.userId})
     .then(user=>{
       if(user){
-        return res.json("用户Id已经存在！！！");
+        return res.status(400).json("学号已经被注册!");
       }else {
         // res.json("register worked");
         const newUser=new User({
@@ -28,14 +28,15 @@ router.post('/register',(req,res)=>{
         bcrypt.genSalt(10, function(err, salt) {
           bcrypt.hash(newUser.password, salt, function(err, hash) {
             if(err){
-              console.log(err);
+              throw err;
             }else{
               newUser.password=hash;
             }
             // return res.json(hash);
             newUser.save()
               .then(success=>{
-                return res.json('注册成功!!!');
+                // return res.json('注册成功!!!');
+                res.json(user)
               })
               .catch(err=>{
                 console.log(err);

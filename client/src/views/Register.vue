@@ -87,7 +87,7 @@
             { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
           ],
           userId: [
-            {validator: checkNumber, trigger:"blur"}
+            {required:true,validator: checkNumber, trigger:"blur"}
           ],
           identity: [
             { required: true, message: '请选择身份', trigger: 'change' }
@@ -111,10 +111,11 @@
                 this.$message({
                   message:"注册成功",
                   type: 'success'
-                })
+                });
+                this.$router.push('/login');
               })
           }
-          this.$router.push('/login');
+
         });
       },
       resetForm(formName) {
