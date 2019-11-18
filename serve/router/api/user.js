@@ -69,7 +69,7 @@ router.post('/login',(req,res)=>{
               // 第一个参数是一个规则，构成token
               // 第二个参数是起一个名字
               // 第三个参数是token的过期时间
-              jwt.sign(rule, "secret", { expiresIn:3600 }, (err, token)=> {
+              jwt.sign(rule, "secret", { expiresIn:60 }, (err, token)=> {
                 // console.log(token);
                 res.json({
                   success:true,
@@ -77,11 +77,11 @@ router.post('/login',(req,res)=>{
                 })
               });
             }else {
-              res.json("密码错误!!!");
+              return res.status(400).json("密码错误!!!");
             }
           });
       }else{
-        res.json('用户名不存在!!!');
+        return res.status(404).json("学号不存在!!!");
       }
     })
 });
