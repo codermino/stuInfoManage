@@ -27,6 +27,7 @@
 </template>
 
 <script>
+  import jwt_decode from 'jwt-decode'
   export default {
     name: "Login",
     data() {
@@ -90,10 +91,24 @@
                 const {token}=res.data;
                 localStorage.setItem('eleToken',token);
 
+                const decoded = jwt_decode(token);
+                // console.log(decoded);
+                this.$store.dispatch("setAuthenticated",!this.isEmpty(localStorage.eleToken));
+                this.$store.dispatch("setUser",decoded);
+
                 this.$router.push('/index');
               })
           }
         });
+      },
+
+      isEmpty(value) {
+        return (
+          value === undefined ||
+          value === null ||
+          (typeof value === "object" && Object.keys(value).length === 0) ||
+          (typeof value === "string" && value.trim().length === 0)
+        );
       },
 
       resetForm(formName) {

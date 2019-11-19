@@ -34,6 +34,8 @@ const routes = [
   }
 ];
 
+
+
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -43,6 +45,7 @@ const router = new VueRouter({
 //路由守卫
 router.beforeEach((to,from,next)=>{
   const isLogin=!!localStorage.getItem("eleToken");
+
   if(to.path==='/login'||to.path==='/register'){
     next();
   }else{

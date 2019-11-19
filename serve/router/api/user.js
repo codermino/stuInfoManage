@@ -62,6 +62,7 @@ router.post('/login',(req,res)=>{
               // 登录成功之后携带一个token
               const rule={
                 id:user._id,
+                userId:user.userId,
                 name:user.name,
                 identity: user.identity
               };
