@@ -4,6 +4,10 @@ import Index from '../views/Index'
 import Register from '../views/Register'
 import NotFound from '../views/404'
 import Login from '../views/Login'
+import Home from '../views/Home'
+import InfoShow from '../views/InfoShow'
+import Score from '../views/Score'
+import Course from '../views/Course'
 
 Vue.use(VueRouter);
 
@@ -15,7 +19,14 @@ const routes = [
   {
     path: '/index',
     name: 'index',
-    component: Index
+    component: Index,
+    children:[
+      {path:'',component:Home},
+      {path:'/home',name:'home',component:Home},
+      {path:'/infoshow',name:'infoshow',component:InfoShow},
+      {path:'/score',name:'score',component:Score},
+      {path:'/course',name:'course',component:Course}
+    ]
   },
   {
     path: '/register',

@@ -37,6 +37,10 @@ const actions={
   },
   setUser:({commit},user)=>{
     commit('set_user',user);
+  },
+  clearCurrentState({commit}){
+    commit('set_authenticated',false);
+    commit('set_user',{});
   }
 };
 

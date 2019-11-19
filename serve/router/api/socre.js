@@ -47,7 +47,9 @@ router.get("/",passport.authenticate("jwt",{session:false}),(req,res)=>{
 
 // 这里要进行一下重复验证
 router.post("/add",passport.authenticate("jwt",{session:false}),(req,res)=>{
-  // 管理员添加成绩信息的时候必须stuId存在，并且className存在
+  // 管理员添加成绩信息的时候必须userId存在，并且className存在
+  // 并且在添加的时候要看score表中是否存在相同的课程cId和userId
+
   const scoreFields={};
 
   if(req.body.className) scoreFields.className=req.body.className;
@@ -55,6 +57,7 @@ router.post("/add",passport.authenticate("jwt",{session:false}),(req,res)=>{
 
   if(req.body.cId)  scoreFields.cId=req.body.cId;
   if(req.body.userId) scoreFields.userId=req.body.userId;
+
   User.findOne({userId:scoreFields.userId})
     .then(user=>{
       if(user){
@@ -62,13 +65,20 @@ router.post("/add",passport.authenticate("jwt",{session:false}),(req,res)=>{
         Course.findOne({cId:scoreFields.cId})
           .then(course=>{
             if(course){
-              scoreFields.courseName=course.courseName;
-              scoreFields.credit=course.credit;
-              scoreFields.getCredit=scoreFields.score/100.0*course.credit;
-              new Score(scoreFields).save()
+              Score.findOne({cId:scoreFields.cId,userId:scoreFields.userId})
                 .then(score=>{
-                  res.json(score);
-                })
+                  if(score){
+                    res.json("该用户已经存在该门课程成绩");
+                  }else{
+                    scoreFields.courseName=course.courseName;
+                    scoreFields.credit=course.credit;
+                    scoreFields.getCredit=scoreFields.score/100.0*course.credit;
+                    new Score(scoreFields).save()
+                      .then(score=>{
+                        res.json(score);
+                      })
+                  }
+                });
             }else{
               res.json("不存在该课程!!!请核对!!!");
             }

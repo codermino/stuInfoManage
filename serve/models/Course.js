@@ -23,7 +23,7 @@ const CSSchema=new Schema({
     default:0
   },
   time:{
-    type:Date,
+    type:String,
     default:Date.now
   }
 });
