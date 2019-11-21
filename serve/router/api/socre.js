@@ -68,7 +68,7 @@ router.post("/add",passport.authenticate("jwt",{session:false}),(req,res)=>{
               Score.findOne({cId:scoreFields.cId,userId:scoreFields.userId})
                 .then(score=>{
                   if(score){
-                    res.json("该用户已经存在该门课程成绩");
+                    return res.status(400).json("该用户已经存在该门课程成绩");
                   }else{
                     scoreFields.courseName=course.courseName;
                     scoreFields.credit=course.credit;
@@ -80,11 +80,11 @@ router.post("/add",passport.authenticate("jwt",{session:false}),(req,res)=>{
                   }
                 });
             }else{
-              res.json("不存在该课程!!!请核对!!!");
+              return res.status(400).json("不存在该课程!!!请核对!!!");
             }
           })
       }else{
-        res.json("不存在该学生!!!,请核对Id!!!");
+        return res.status(400).json("不存在该学生!!!,请核对Id!!!");
       }
     });
 });

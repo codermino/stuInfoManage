@@ -21,15 +21,6 @@
           placeholder="输入关键字搜索"/>
       </div>
 
-<!--      <el-table-->
-<!--        v-if="tableData.length > 0"-->
-<!--        :data='tableData'-->
-<!--        max-height="450"-->
-<!--        border-->
-<!--        style="width: 100%"-->
-<!--        :summary-method="getSummaries"-->
-<!--        :show-summary="userIdentity">-->
-
       <el-table
         v-if="tableData.length > 0"
         :data='tables'
@@ -139,20 +130,26 @@
 
       </el-table>
     </div>
+    <dialog-score :dialog="dialog" @updata="getProfile"></dialog-score>
   </div>
 </template>
 
 <script>
   import {formatDate,changeNumber} from "../common/utils";
+  import DialogScore from '../components/DialogScore'
 
   export default {
     name: "score",
     components:{
+      DialogScore
     },
     data() {
       return{
         tableData:[],
-        search: ''
+        search: '',
+        dialog:{
+          show:false
+        }
       }
     },
     computed:{
@@ -197,6 +194,10 @@
         }).catch(err=>{
           console.log(err);
         });
+      },
+
+      handleAdd(){
+        this.dialog.show=true;
       },
 
       handleEdit(index, row) {
