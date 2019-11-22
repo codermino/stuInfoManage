@@ -5,7 +5,8 @@
       :visible.sync="dialog.show"
       :close-on-click-modal='false'
       :close-on-press-escape='false'
-      :modal-append-to-body="false">
+      :modal-append-to-body="false"
+      :destroy-on-close="true">
 
       <el-form
         ref="form"
@@ -15,11 +16,11 @@
         style="margin:10px;width:auto;">
 
         <el-form-item prop='userId' label="学号:">
-          <el-input type="userId" v-model="formData.userId"></el-input>
+          <el-input type="userId" v-model="formData.userId" :disabled="dialog.type==='edit'"></el-input>
         </el-form-item>
 
         <el-form-item label="班级:" >
-          <el-select v-model="formData.className" placeholder="班级">
+          <el-select v-model="formData.className" placeholder="班级" :disabled="dialog.type==='edit'">
             <el-option
               v-for="(formtype, index) in format_type_list"
               :key="index"
@@ -29,7 +30,7 @@
         </el-form-item>
 
         <el-form-item prop='cId' label="课程编号:">
-          <el-input type="cId" v-model="formData.cId"></el-input>
+          <el-input type="cId" v-model="formData.cId" :disabled="dialog.type==='edit'"></el-input>
         </el-form-item>
 
         <el-form-item prop='score'  label="分数:">
@@ -85,12 +86,6 @@
         }, 500);
       };
       return{
-        formData:{
-          className:'',
-          userId:'',
-          cId:'',
-          score:''
-        },
         format_type_list: [
           "计科1701",
           "计科1702",
@@ -105,7 +100,7 @@
             {required:true,triggerEvent:"change"}
           ],
           score:[
-            { required: true, message: '请输入正确的分数(0-100之间数字)', trigger: ['blur',"change"] ,validator: checkScore},
+            { required: true, message: '请输入正确的分数(0-100之间数字)', trigger: ["blur"] ,validator: checkScore},
           ],
           cId: [
             {required:true, message: '请输入课程编号',trigger:"blur"}
@@ -114,20 +109,23 @@
       }
     },
     props: {
-      dialog: Object
+      dialog: Object,
+      formData:Object
     },
     methods: {
       onSubmit(form) {
         this.$refs[form].validate(valid => {
           if (valid) {
-            // console.log(this.formData);
+            // console.log(this.formData.id);
             //表单数据验证完成之后，提交数据;
 
             // 传递给后端接口的formData就是req.body
-            this.axios.post(`/api/score/add`, this.formData).then(res => {
+            const url =
+              this.dialog.type === "add" ? "add" : `edit/${this.formData.id}`;
+            this.axios.post(`/api/score/${url}`, this.formData).then(res => {
               // 操作成功
               this.$message({
-                message: "保存成功！",
+                message: "操作成功！",
                 type: "success"
               });
               // 隐藏dialog

@@ -1,6 +1,8 @@
 <template>
   <div class="fillcontain">
     <div>
+      <date-time-picker :filter-table-data="allTableData" @updata="getProfile" @selectData="selectDate" class="timePicker"></date-time-picker>
+
       <el-form
         :inline="true"
         ref="add_data">
@@ -130,25 +132,36 @@
 
       </el-table>
     </div>
-    <dialog-score :dialog="dialog" @updata="getProfile"></dialog-score>
+    <dialog-score :dialog="dialog" :form-data="formData" @updata="getProfile"></dialog-score>
   </div>
 </template>
 
 <script>
   import {formatDate,changeNumber} from "../common/utils";
   import DialogScore from '../components/DialogScore'
+  import DateTimePicker from '../components/DateTimePicker'
 
   export default {
     name: "score",
     components:{
-      DialogScore
+      DialogScore,
+      DateTimePicker
     },
     data() {
       return{
         tableData:[],
+        allTableData:[],
         search: '',
         dialog:{
-          show:false
+          show:false,
+          title:'',
+          type:''
+        },
+        formData:{
+          className:'',
+          userId:'',
+          cId:'',
+          score:''
         }
       }
     },
@@ -175,7 +188,10 @@
             return Object.keys(data).some(key => {
               // indexOf() 返回某个指定的字符在某个字符串中首次出现的位置，如果没有找到就返回-1；
               // 该方法对大小写敏感！所以之前需要toLowerCase()方法将所有查询到内容变为小写。
-              return String(data[key]).toLowerCase().indexOf(search) > -1
+              // return String(data[key]).toLowerCase().indexOf(search) > -1
+              if(key==='userId'||key==='name'||key==='className'||key==='cId'||key==='courseName'){
+                return String(data[key]).indexOf(search) > -1;
+              }
             })
           })
         }
@@ -191,21 +207,69 @@
         this.axios.get("/api/score").then(res => {
           // console.log(res);
           this.tableData=res.data;
+          this.allTableData=res.data;
         }).catch(err=>{
           console.log(err);
         });
       },
 
+      selectDate(selectDate){
+        this.tableData=selectDate;
+      },
+
       handleAdd(){
-        this.dialog.show=true;
+        this.dialog={
+          show:true,
+          title:'添加成绩信息',
+          type:'add'
+        };
+        this.formData={
+          className:'',
+          userId:'',
+          cId:'',
+          score:''
+        }
       },
 
       handleEdit(index, row) {
-        console.log(index, row);
+        this.dialog={
+          show:true,
+          title:'编辑成绩信息',
+          type:'edit'
+        };
+        this.formData={
+          className:row.className,
+          userId:row.userId,
+          cId:row.cId,
+          score:row.score,
+          id:row._id
+        }
       },
 
       handleDelete(index, row) {
-        console.log(index, row);
+        this.$confirm('此操作将永久删除该条记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          closeOnClickModal:false,
+          closeOnPressEscape:false,
+          roundButton:true,
+          center:true
+        }).then(() => {
+          this.axios.delete(`/api/score/delete/${row._id}`)
+            .then(res=>{
+              this.$message({
+                type:'success',
+                message:'删除成功'
+              });
+              this.getProfile();
+            })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
       },
 
       getSummaries(param) {
@@ -278,5 +342,9 @@
   .pagination {
     text-align: right;
     margin-top: 10px;
+  }
+
+  .timePicker{
+    float: left;
   }
 </style>
