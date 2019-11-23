@@ -46,26 +46,23 @@
         // 这里可以改进当右边的选择框为空的时候
         if(!this.search_data.startTime && !this.search_data.endTime){
           this.$emit('updata');
-          return;
         } else if (!this.search_data.startTime || !this.search_data.endTime) {
           this.$message({
             type: "warning",
             message: "请选择时间区间"
           });
           this.$emit('updata');
-          return;
+        }else {
+          // 获得选择的时间的时间戳
+          const stime = this.search_data.startTime.getTime()/1000;
+          const etime = this.search_data.endTime.getTime()/1000;
+
+          this.selectTableData=this.filterTableData.filter(item=>{
+            let time=item.time/1000;
+            return time >= stime && time <= etime;
+          });
+          this.$emit("selectData",this.selectTableData);
         }
-
-        // 获得选择的时间的时间戳
-        const stime = this.search_data.startTime.getTime()/1000;
-        const etime = this.search_data.endTime.getTime()/1000;
-
-        this.selectTableData=this.filterTableData.filter(item=>{
-          let time=item.time/1000;
-          return time >= stime && time <= etime;
-        });
-
-        this.$emit("selectData",this.selectTableData);
       }
     }
   }

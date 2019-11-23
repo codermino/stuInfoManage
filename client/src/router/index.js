@@ -2,12 +2,12 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Index from '../views/Index'
 import Register from '../views/Register'
-import NotFound from '../views/404'
+import NotFound from '../views/NotFound/404'
 import Login from '../views/Login'
 import Home from '../views/Home'
 import InfoShow from '../views/InfoShow'
 import Score from '../views/Score'
-import Course from '../views/Course'
+import Course from '../views/Course/Course'
 
 Vue.use(VueRouter);
 

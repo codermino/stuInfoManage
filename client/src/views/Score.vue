@@ -131,6 +131,23 @@
         </el-table-column>
 
       </el-table>
+<!--       分页-->
+      <el-row>
+        <el-col :span="24">
+          <div class="pagination">
+            <el-pagination
+              :page-sizes="paginations.page_sizes"
+              :page-size="paginations.page_size"
+              :layout="paginations.layout"
+              :total="paginations.total"
+              :current-page.sync='paginations.page_index'
+              @current-change='handleCurrentChange'
+              @size-change='handleSizeChange'>
+            </el-pagination>
+          </div>
+        </el-col>
+      </el-row>
+
     </div>
     <dialog-score :dialog="dialog" :form-data="formData" @updata="getProfile"></dialog-score>
   </div>
@@ -151,6 +168,8 @@
       return{
         tableData:[],
         allTableData:[],
+        pageTableData:[],
+        searchTableData:[],
         search: '',
         dialog:{
           show:false,
@@ -162,6 +181,13 @@
           userId:'',
           cId:'',
           score:''
+        },
+        paginations: {
+          page_index: 1, // 当前位于哪页
+          total: 0, // 总数
+          page_size: 5, // 1页显示多少条
+          page_sizes: [5, 10, 15, 20], //每页显示多少条
+          layout: "total, sizes, prev, pager, next, jumper" // 翻页属性
         }
       }
     },
@@ -178,7 +204,7 @@
           // filter() 方法创建一个新的数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
           // 注意： filter() 不会对空数组进行检测。
           // 注意： filter() 不会改变原始数组。
-          return this.tableData.filter(data => {
+          let tables= this.tableData.filter(data => {
             // some() 方法用于检测数组中的元素是否满足指定条件;
             // some() 方法会依次执行数组的每个元素：
             // 如果有一个元素满足条件，则表达式返回true , 剩余的元素不会再执行检测;
@@ -193,9 +219,14 @@
                 return String(data[key]).indexOf(search) > -1;
               }
             })
-          })
+          });
+          this.paginations.total=tables.length;
+          return tables;
+        }else
+        {
+          this.paginations.total=this.pageTableData.length;
+          return this.tableData;
         }
-        return this.tableData;
       }
     },
     created() {
@@ -205,16 +236,51 @@
       getProfile() {
         // 获取表格数据
         this.axios.get("/api/score").then(res => {
-          // console.log(res);
           this.tableData=res.data;
           this.allTableData=res.data;
+          this.pageTableData=res.data;
+          this.setPaginations();
         }).catch(err=>{
           console.log(err);
         });
       },
 
+      handleCurrentChange(page) {
+        // 获取当前页(也就是获取当前页开头的数据是第几条数据)
+        let index=this.paginations.page_size*(page-1);
+        // 获取当前页的数据的总数
+        let nums=this.paginations.page_size*page;
+        // 容器
+        let tables=[];
+
+        for(let i=index;i<nums;i++){
+          if(this.pageTableData[i]){
+            tables.push(this.pageTableData[i]);
+          }
+          this.tableData=tables;
+        }
+      },
+      handleSizeChange(page_size) {
+        // 切换size
+        this.paginations.page_index = 1;
+        this.paginations.page_size = page_size;
+        this.tableData = this.pageTableData.filter((item, index) => {
+          return index < page_size;
+        });
+      },
+      setPaginations() {
+        // 总页数
+        this.paginations.page_index = 1;
+        this.paginations.page_size = 5;
+        // 设置默认分页数据
+        this.tableData = this.pageTableData.filter((item, index) => {
+          return index < this.paginations.page_size;
+        });
+      },
+
       selectDate(selectDate){
-        this.tableData=selectDate;
+        this.pageTableData=selectDate;
+        this.setPaginations();
       },
 
       handleAdd(){
