@@ -6,7 +6,7 @@ import NotFound from '../views/NotFound/404'
 import Login from '../views/Login'
 import Home from '../views/Home'
 import InfoShow from '../views/InfoShow'
-import Score from '../views/Score'
+import Score from '../views/Score/Score'
 import Course from '../views/Course/Course'
 
 Vue.use(VueRouter);

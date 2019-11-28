@@ -18,6 +18,10 @@ const UserSchema=new Schema({
     type:String,
     required:true
   },
+  avatar:{
+    type:String,
+    default:'3ea6beec64369c2642b92c6726f1epng.png'
+  },
   time:{
     type:Date,
     default:Date.now

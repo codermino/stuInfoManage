@@ -3,6 +3,7 @@ const router=express.Router();
 const bcrypt=require("bcrypt");
 const jwt = require('jsonwebtoken');
 const passport=require('passport');
+const formidable=require("formidable");
 
 const User=require("../../models/User");
 
@@ -64,7 +65,8 @@ router.post('/login',(req,res)=>{
                 id:user._id,
                 userId:user.userId,
                 name:user.name,
-                identity: user.identity
+                identity: user.identity,
+                avatar: user.avatar
               };
 
               // 第一个参数是一个规则，构成token
@@ -96,6 +98,47 @@ router.get("/current",passport.authenticate("jwt",{session:false}),(req,res)=>{
     userId:req.user.userId,
     name:req.user.name,
     identity:req.user.identity
+  });
+});
+
+router.post('/avatar',passport.authenticate("jwt",{session:false}), (req, res)=> {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With, Current-Page');
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+
+  const avatarFields={};
+  let form = new formidable.IncomingForm();
+
+  form.encoding = 'utf-8';
+  form.uploadDir =process.cwd()+ "/assets/image";
+  form.keepExtensions = true;
+  form.maxFieldsSize = 2 * 1024 * 1024;
+
+  const userId=req.user.userId;
+
+  form.parse(req, function(err, fields, files) {
+    const pieces = files.file.path.split(/[\s\\]+/);
+    const hashname=pieces[pieces.length-1];
+    if(files){
+      User.findOneAndUpdate(
+        {userId:userId},
+        {$set:{avatar:hashname}},
+        {new:true}
+      ).then(user=>{
+        // 修改头像成功之后修改token
+        const rule={
+          id:user._id,
+          userId:user.userId,
+          name:user.name,
+          identity: user.identity,
+          avatar: user.avatar
+        };
+
+        jwt.sign(rule, "secret", { expiresIn:3600 }, (err, token)=> {
+          res.status(200).json(hashname);
+        });
+      });
+    }
   });
 });
 

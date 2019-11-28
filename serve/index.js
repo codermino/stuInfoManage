@@ -42,6 +42,7 @@ app.get('/', (req,res)=> {
 app.use("/api/user",user);
 app.use("/api/course",course);
 app.use("/api/score",socre);
+app.use('/api/static', express.static(__dirname + '/assets/image'));
 
 app.listen(port,()=>{
   console.log(`Server is running on port ${port}`);
