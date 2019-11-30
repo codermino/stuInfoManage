@@ -47,11 +47,9 @@ export default {
         this.axios.post("/api/user/avatar", data, {
           headers: { "content-type": "multipart/form-data" }
         }).then(res=>{
-          const oldUser=this.$store.getters.user;
-          oldUser.avatar=res.data;
-          this.$store.dispatch("setUser",oldUser);
-
           this.$message.success("修改头像成功,请重新登录");
+          this.$store.dispatch("clearCurrentState");
+          localStorage.removeItem("eleToken");
           this.$router.push('/login');
         });
       }

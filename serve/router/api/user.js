@@ -125,18 +125,7 @@ router.post('/avatar',passport.authenticate("jwt",{session:false}), (req, res)=>
         {$set:{avatar:hashname}},
         {new:true}
       ).then(user=>{
-        // 修改头像成功之后修改token
-        const rule={
-          id:user._id,
-          userId:user.userId,
-          name:user.name,
-          identity: user.identity,
-          avatar: user.avatar
-        };
-
-        jwt.sign(rule, "secret", { expiresIn:3600 }, (err, token)=> {
-          res.status(200).json(hashname);
-        });
+        res.status(200).json(hashname);
       });
     }
   });

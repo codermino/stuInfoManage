@@ -11,6 +11,7 @@
     created(){
       if(localStorage.eleToken){
         const decoded = jwt_decode(localStorage.eleToken);
+        console.log(decoded);
         this.$store.dispatch("setAuthenticated",!this.isEmpty(localStorage.eleToken));
         this.$store.dispatch("setUser",decoded);
       }
