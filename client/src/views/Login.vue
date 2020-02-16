@@ -79,7 +79,11 @@
       submitForm(formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            this.axios.post('api/user/login',this.ruleForm)
+            //当使用cors或者请求头跨域的时候的请求语句
+            // this.axios.post('http://localhost:5000/api/user/login',this.ruleForm)
+            this.axios.post('/api/user/login',this.ruleForm)
+            //当跨域文件中的代码是下面的代码的时候使用的请求语句
+            // this.axios.post('user/login',this.ruleForm)
               .then(res=>{
                 // 注册成功
                 this.$message({
