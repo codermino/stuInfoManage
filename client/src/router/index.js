@@ -8,6 +8,9 @@ import Home from '../views/Home'
 import InfoShow from '../views/InfoShow'
 import Score from '../views/Score/Score'
 import Course from '../views/Course/Course'
+import FindPassword from '../views/FindPassword'
+import Check from '../views/Check'
+import ResetPassword from "../views/ResetPassword";
 
 Vue.use(VueRouter);
 
@@ -39,6 +42,21 @@ const routes = [
     component: Login
   },
   {
+    path: '/fpassword',
+    name: 'fpassword',
+    component: FindPassword
+  },
+  {
+    path: '/check',
+    name: 'check',
+    component: Check
+  },
+  {
+    path: '/rpassword',
+    name: 'rpassword',
+    component: ResetPassword
+  },
+  {
     path: '*',
     name: 'notfound',
     component: NotFound
@@ -57,7 +75,7 @@ const router = new VueRouter({
 router.beforeEach((to,from,next)=>{
   const isLogin=!!localStorage.getItem("eleToken");
 
-  if(to.path==='/login'||to.path==='/register'){
+  if(to.path==='/login'||to.path==='/register'||to.path === '/fpassword'||to.path === '/check'||to.path === '/rpassword'){
     next();
   }else{
     isLogin ? next():next('/login');

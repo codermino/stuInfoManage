@@ -18,6 +18,7 @@
 
           <div class="tiparea">
             <p>还没有账号？现在<router-link to='/register'>注册</router-link></p>
+            <p>忘记密码？<router-link to='/fpassword'>点击找回</router-link></p>
           </div>
 
         </el-form>
@@ -85,7 +86,6 @@
             //当跨域文件中的代码是下面的代码的时候使用的请求语句
             // this.axios.post('user/login',this.ruleForm)
               .then(res=>{
-                // 注册成功
                 this.$message({
                   message:"登录成功",
                   type: 'success'
@@ -117,6 +117,11 @@
 
       resetForm(formName) {
         this.$refs[formName].resetFields();
+      },
+
+      //找回密码功能
+      findpassword(){
+        alert(123);
       }
     }
   }

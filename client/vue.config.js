@@ -2,6 +2,18 @@ const path = require('path');
 const debug = process.env.NODE_ENV !== 'production';
 
 module.exports = {
+  // configureWebpack: {
+  //   resolve: {
+  //     alias: {
+  // @表示src文件夹
+  //       'views': '@/views',
+  //       'components': '@/components',
+  //       'network': '@/network',
+  //       'common': '@/common',
+  //       'assets': '@/assets',
+  //     }
+  //   }
+  // },
   devServer: {
     proxy: { // 配置跨域
       '/api': {
