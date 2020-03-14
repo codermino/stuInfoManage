@@ -43,6 +43,7 @@ const passport=require("passport");
 const user=require("./router/api/user");
 const course=require("./router/api/course");
 const socre=require("./router/api/socre");
+const commondata=require("./router/api/commondata");
 
 // 配置body-parser
 // parse application/x-www-form-urlencoded
@@ -79,7 +80,9 @@ app.use("/api/user",user);
 // app.use("/user",user);
 app.use("/api/course",course);
 app.use("/api/score",socre);
+app.use("/api/commondata",commondata);
 app.use('/api/static', express.static(__dirname + '/assets/image'));
+app.use('/api/rowing', express.static(__dirname + '/assets/rowing'));
 
 app.listen(port,()=>{
   console.log(`Server is running on port ${port}`);

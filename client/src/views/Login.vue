@@ -7,12 +7,23 @@
           <el-form-item label="学号" prop="userId">
             <el-input v-model="ruleForm.userId" placeholder="请输入学号"></el-input>
           </el-form-item>
-          <el-form-item label="密码" prop="password">
-            <el-input type="password" v-model="ruleForm.password" placeholder="请输入密码"></el-input>
+          <el-form-item label="密码" prop="password" class="passwordInput">
+            <el-input :type="type" v-model="ruleForm.password" placeholder="请输入密码"></el-input>
+            <div class="switch-show">
+              <img @click="changeToHidden" :hidden="type === 'password'" src="./images/show_pwd.png" alt="" width="20">
+              <img @click="changeToShow" :hidden="type === 'text'" src="./images/hide_pwd.png" alt="" width="20">
+            </div>
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" class="submit_btn" @click="submitForm('ruleForm')">登录</el-button>
+            <Vcode
+              :imgs="[Img1,Img2, Img3]"
+              :show="isShow"
+              @onSuccess="onSuccess"
+              @onClose="onClose"
+            />
+<!--            <el-button type="primary" class="submit_btn" @click="submitForm('ruleForm')">登录</el-button>-->
+            <el-button type="primary" class="submit_btn" @click="onSubmit">登录</el-button>
             <el-button class="submit_btn" @click="resetForm('ruleForm')">重置</el-button>
           </el-form-item>
 
@@ -22,6 +33,7 @@
           </div>
 
         </el-form>
+
       </div>
     </section>
   </div>
@@ -29,8 +41,16 @@
 
 <script>
   import jwt_decode from 'jwt-decode'
+  import Vcode from "vue-puzzle-vcode";
+  import Img1 from '../assets/checkImg/bg1.jpg';
+  import Img2 from '../assets/checkImg/bg2.jpg';
+  import Img3 from '../assets/checkImg/bg3.jpg';
+
   export default {
     name: "Login",
+    components:{
+      Vcode
+    },
     data() {
       let checkNumber = (rule, value, callback) => {
         if (!value) {
@@ -62,6 +82,14 @@
       };
 
       return {
+        //滑动验证的背景图片
+        Img1,
+        Img2,
+        Img3,
+        //控制密码的显示与隐藏
+        type:'password',
+        //控制滑动验证的验证框是否显示
+        isShow:false,
         ruleForm: {
           userId:'',
           password: '',
@@ -119,9 +147,27 @@
         this.$refs[formName].resetFields();
       },
 
-      //找回密码功能
-      findpassword(){
-        alert(123);
+      //控制密码框显示与隐藏的方法
+      changeToShow(){
+        this.type = 'text'
+      },
+
+      changeToHidden(){
+        this.type = 'password'
+      },
+
+      //控制滑动验证框的方法
+      onSubmit(){
+        this.isShow = true;
+      },
+      // 用户通过了验证
+      onSuccess(msg){
+        this.isShow = false; // 通过验证后，需要手动隐藏模态框
+        this.submitForm("ruleForm");
+      },
+      // 用户点击遮罩层，应该关闭模态框
+      onClose(){
+        this.isShow = false;
       }
     }
   }
@@ -166,5 +212,14 @@
   }
   .tiparea p a {
     color: #409eff;
+  }
+  .passwordInput{
+    position: relative;
+  }
+
+  .passwordInput .switch-show{
+    position: absolute;
+    right: 10px;
+    top: 5px;
   }
 </style>

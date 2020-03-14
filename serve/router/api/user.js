@@ -1,5 +1,6 @@
 const express=require("express");
 const router=express.Router();
+const fs = require('fs');
 const bcrypt=require("bcrypt");
 const jwt = require('jsonwebtoken');
 const passport=require('passport');
@@ -110,8 +111,8 @@ router.post('/avatar',passport.authenticate("jwt",{session:false}), (req, res)=>
   let form = new formidable.IncomingForm();
 
   form.encoding = 'utf-8';
-  form.uploadDir =process.cwd()+ "/assets/image";
-  form.keepExtensions = true;
+  form.uploadDir =process.cwd()+ "/assets/image/";
+  // form.keepExtensions = true;
   form.maxFieldsSize = 2 * 1024 * 1024;
 
   const userId=req.user.userId;
@@ -128,6 +129,51 @@ router.post('/avatar',passport.authenticate("jwt",{session:false}), (req, res)=>
         res.status(200).json(hashname);
       });
     }
+  });
+});
+
+router.post('/avatar2',passport.authenticate("jwt",{session:false}), (req, res)=> {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Content-Length, Authorization, Accept, X-Requested-With, Current-Page');
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+
+  const avatarFields={};
+  let form = new formidable.IncomingForm();
+
+  form.encoding = 'utf-8';
+  form.uploadDir =process.cwd()+ "/assets/image/";
+  form.maxFieldsSize = 2 * 1024 * 1024;
+  // express的req中并没有req.user,这里的req.user.username应该是passport的authenticate方法中给req对象
+  const userId = req.user.userId;
+
+  form.parse(req, function (err, fields, files) {
+    // console.log(files);
+    const upload_file = files.file;
+    const old_path = upload_file.path;
+    const pieces = upload_file.path.split(/[\s\\]+/);
+    const extension = upload_file.type.split(/[\s/]+/);
+    // 获得图片的拓展名
+    const extension_type = extension[extension.length - 1];
+    //获得图片的hash的名字
+    const hashname = pieces[pieces.length - 1] + '.' + extension_type;
+    //得到上传图片的新名字
+    const new_path = form.uploadDir + hashname;
+    // console.log(new_path);
+    //将图片改名
+    fs.rename(old_path, new_path, async function (err) {
+      if (err) {
+        return res.send({code: 500, msg: '改名失败'});
+      }
+      const result2 = await User.findOneAndUpdate(
+        {userId: userId},
+        {$set: {avatar: hashname}},
+        {new: true}
+      );
+      if (!result2) {
+        return res.send({code: 500, msg: '修改头像失败'})
+      }
+      res.send({code: 200, data: {msg: '修改头像成功', avatar_name: hashname}});
+    });
   });
 });
 

@@ -3,8 +3,10 @@
        <el-row type="flex" class="row-bg" justify="center">
            <el-col :span="8">
              <div class="user">
-               <input type="file" name="file" accept=".jpg, .jpeg, .png" @change="uploadAvatar" ref="inputAvatar" hidden>
-               <img :src="avatar" alt="" class="avatar" @click="changeAvatar"/>
+<!--               <input type="file" name="file" accept=".jpg, .jpeg, .png" @change="uploadAvatar" ref="inputAvatar" hidden>-->
+               <el-badge value="点击修改头像" class="item" type="primary">
+                 <img :src="avatar" alt="" class="avatar" @click="changeAvatar"/>
+               </el-badge>
              </div>
            </el-col>
 
@@ -21,12 +23,16 @@
                </div>
            </el-col>
        </el-row>
+      <croppershow :title="'头像裁剪'" :file-type="'blob'" :showUpload="showDialog" @upload-close="closeDialog"></croppershow>
     </div>
 </template>
 <script>
-import jwt_decode from 'jwt-decode'
+import croppershow from './cutpic'
 export default {
   name: "infoshow",
+  components:{
+    croppershow
+  },
   computed: {
     user() {
       return this.$store.getters.user;
@@ -34,28 +40,37 @@ export default {
   },
   data(){
     return{
+      showDialog:false,
       avatar:'/api/static/'+this.$store.getters.user.avatar
     }
   },
   methods:{
-    uploadAvatar(avatar) {
-      let file = avatar.target.files[0];
-      let data = new FormData();
-      if(file){
-        data.append("file", file, file.name);//很重要 data.append("file", file);不成功
-        // console.log(data.get('file'));
-        this.axios.post("/api/user/avatar", data, {
-          headers: { "content-type": "multipart/form-data" }
-        }).then(res=>{
-          this.$message.success("修改头像成功,请重新登录");
-          this.$store.dispatch("clearCurrentState");
-          localStorage.removeItem("eleToken");
-          this.$router.push('/login');
-        });
-      }
-    },
+    // uploadAvatar(avatar) {
+    //   let file = avatar.target.files[0];
+    //   let data = new FormData();
+    //   if(file){
+    //     data.append("file", file, file.name);//很重要 data.append("file", file);不成功
+    //     // console.log(data.get('file'));
+    //     console.log(data);
+    //     this.axios.post("/api/user/avatar", data, {
+    //       headers: { "content-type": "multipart/form-data" }
+    //     }).then(res=>{
+    //       this.$message.success("修改头像成功,请重新登录");
+    //       this.$store.dispatch("clearCurrentState");
+    //       localStorage.removeItem("eleToken");
+    //       this.$router.push('/login');
+    //     });
+    //   }
+    // },
     changeAvatar(){
-      this.$refs.inputAvatar.click();
+      this.showDialog = true;
+      // this.$refs.inputAvatar.click();
+    },
+    openDialog(){
+      this.showDialog = true;
+    },
+    closeDialog(){
+      this.showDialog = false;
     }
   }
 };
